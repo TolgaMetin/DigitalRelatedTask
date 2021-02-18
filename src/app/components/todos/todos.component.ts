@@ -32,6 +32,10 @@ export class TodosComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.getData();
+  }
+
+  getData() {
     combineLatest([this.todos$, this.users$]).subscribe(([todos, users]) => {
       console.log(
         `Todos: ${todos},
@@ -43,7 +47,7 @@ export class TodosComponent implements OnInit {
       });
       this.dataSource = new MatTableDataSource(todos.body);
       this.dataSource.paginator = this.paginator;
-      this.dataSource.sort=this.sort;
+      this.dataSource.sort = this.sort;
       this.logger.log('Request successful !');
     });
   }
@@ -55,7 +59,7 @@ export class TodosComponent implements OnInit {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, go ahead.',
-      cancelButtonText: 'No, let me think'
+      cancelButtonText: 'No, let me think',
     }).then((result) => {
       if (result.value) {
         this.todosService.deleteTodo(todo).subscribe((response) => {
@@ -64,30 +68,46 @@ export class TodosComponent implements OnInit {
             this.dataSource.data.splice(index, 1);
             this.dataSource._updateChangeSubscription();
             this.logger.log('Request Delete successful !');
-            Swal.fire(
-              'Removed!',
-              'Product removed successfully.',
-              'success'
-            )
+            Swal.fire('Removed!', 'Product removed successfully.', 'success');
           } else {
             this.logger.log(`Request failed: ${response.status}.`);
-            Swal.fire(
-              'Cancelled',
-              'Product still in our database.)',
-              'error'
-            )
+            Swal.fire('Cancelled', 'Product still in our database.)', 'error');
           }
         });
-        
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Cancelled',
-          'Product still in our database.)',
-          'error'
-        )
+        Swal.fire('Cancelled', 'Product still in our database.)', 'error');
       }
-    })
+    });
+  }
 
-    
+  editTodo(todo: TodoDto): void {
+    Swal.fire({
+      title: 'Todo durumu?',
+      input: 'checkbox',
+      inputPlaceholder: 'Tamamlandı  mi',
+      inputValue: !todo.completed,
+    }).then(function (result) {
+      // const index = this.dataSource.data.indexOf(todo);
+      if (result.value) {
+        todo.completed = false;
+        this.todosService.toogleTodo(todo).subscribe((response) => {
+          // this.dataSource.data[index] = todo;
+          this.getData();
+          Swal.fire({ icon: 'success', text: 'Done olarak güncellendi!' });
+        });
+      } else if (result.value === 0) {
+        todo.completed = true;
+        this.todosService.toogleTodo(todo).subscribe((response) => {
+          // this.dataSource.data[index] = todo;
+          this.getData();
+          Swal.fire({
+            icon: 'success',
+            text: 'In Progress olarak güncellendi!',
+          });
+        });
+      } else {
+        Swal.fire({ icon: 'error', text: 'Progress devam ediyor' });
+      }
+    });
   }
 }

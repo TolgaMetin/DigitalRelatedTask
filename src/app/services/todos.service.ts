@@ -10,8 +10,6 @@ import { LoggerService } from './logger.service';
 export class TodosService {
 
   url = 'https://jsonplaceholder.typicode.com/todos/';
-  count = 50;
-  limit = `?_limit=${this.count}`;
   headers = new HttpHeaders(
     {'Content-Type': 'application/json; charset=UTF-8'}
   );
@@ -25,23 +23,13 @@ export class TodosService {
   }
 
   getTodos(): Observable<HttpResponse<TodoDto[]>> {
-    this.logger.log(`Requesting GET at '${this.url}${this.limit}'...`);
+    this.logger.log(`Requesting GET at '${this.url}'...`);
 
-    return this.http.get<TodoDto[]>(`${this.url}${this.limit}`, {
+    return this.http.get<TodoDto[]>(`${this.url}`, {
       observe: 'response'
     });
   }
 
-  queryTodo(): Observable<HttpResponse<TodoDto>> {
-    this.logger.log(`Requesting POST at '${this.url}'...`);
-
-    ++this.count;
-
-    return this.http.get<TodoDto>(`${this.url}/${this.count}`, {
-      headers: this.headers,
-      observe: 'response'
-    });
-  }
 
   toggleTodo(todo: TodoDto): Observable<HttpResponse<object>> {
     this.logger.log(`Requesting PUT at '${this.url}/${todo.id}'...`);

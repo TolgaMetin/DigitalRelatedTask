@@ -32,6 +32,9 @@
                 Actions
               </mat-header-cell>
               <mat-cell *matCellDef="let row" class="td-actions">
+                <a mat-raised-button type="button" class="btn btn-primary btn-link" (click)="editTodo(row)">
+                  <i class="material-icons">edit</i>
+                </a>
                 <a mat-raised-button type="button" class="btn btn-danger btn-link" (click)="deleteTodo(row)">
                   <i class="material-icons">delete</i>
                 </a>
