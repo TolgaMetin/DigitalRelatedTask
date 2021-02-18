@@ -9,6 +9,7 @@ import { UserService } from 'src/app/services/user.service';
 import { combineLatest, Observable } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { MatSort } from '@angular/material/sort';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-todos',
@@ -48,15 +49,45 @@ export class TodosComponent implements OnInit {
   }
 
   deleteTodo(todo: TodoDto): void {
-    this.todosService.deleteTodo(todo).subscribe((response) => {
-      if (response.ok) {
-        const index = this.dataSource.data.indexOf(todo);
-        this.dataSource.data.splice(index, 1);
-        this.dataSource._updateChangeSubscription();
-        this.logger.log('Request Delete successful !');
-      } else {
-        this.logger.log(`Request failed: ${response.status}.`);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This process is irreversible.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, go ahead.',
+      cancelButtonText: 'No, let me think'
+    }).then((result) => {
+      if (result.value) {
+        this.todosService.deleteTodo(todo).subscribe((response) => {
+          if (response.ok) {
+            const index = this.dataSource.data.indexOf(todo);
+            this.dataSource.data.splice(index, 1);
+            this.dataSource._updateChangeSubscription();
+            this.logger.log('Request Delete successful !');
+            Swal.fire(
+              'Removed!',
+              'Product removed successfully.',
+              'success'
+            )
+          } else {
+            this.logger.log(`Request failed: ${response.status}.`);
+            Swal.fire(
+              'Cancelled',
+              'Product still in our database.)',
+              'error'
+            )
+          }
+        });
+        
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire(
+          'Cancelled',
+          'Product still in our database.)',
+          'error'
+        )
       }
-    });
+    })
+
+    
   }
 }
