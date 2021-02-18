@@ -54,12 +54,12 @@ export class TodosComponent implements OnInit {
 
   deleteTodo(todo: TodoDto): void {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'This process is irreversible.',
+      title: 'Emin misiniz?',
+      text: 'Bu İslemin geri donusu yoktur!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, go ahead.',
-      cancelButtonText: 'No, let me think',
+      confirmButtonText: 'Evet, Devam Et.',
+      cancelButtonText: 'Hayır, Düşüneyim',
     }).then((result) => {
       if (result.value) {
         this.todosService.deleteTodo(todo).subscribe((response) => {
@@ -67,37 +67,37 @@ export class TodosComponent implements OnInit {
             const index = this.dataSource.data.indexOf(todo);
             this.dataSource.data.splice(index, 1);
             this.dataSource._updateChangeSubscription();
-            this.logger.log('Request Delete successful !');
-            Swal.fire('Removed!', 'Product removed successfully.', 'success');
+            this.logger.log('Silme İslemi Basarili !');
+            Swal.fire('Kaldırıldı!', 'Basarıyla kaldirildi', 'success');
           } else {
             this.logger.log(`Request failed: ${response.status}.`);
-            Swal.fire('Cancelled', 'Product still in our database.)', 'error');
+            Swal.fire('İptal Edildi', 'Veritabanında degisiklik yapilmadi', 'error');
           }
         });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('Cancelled', 'Product still in our database.)', 'error');
+        Swal.fire('İptal Edildi', 'Veritabanında degisiklik yapilmadi', 'error');
       }
     });
   }
 
   editTodo(todo: TodoDto): void {
     Swal.fire({
-      title: 'Todo durumu?',
+      title: 'Tamamlanma Durumu?',
       input: 'checkbox',
-      inputPlaceholder: 'Tamamlandı  mi',
+      inputPlaceholder: 'Tamamlandi',
       inputValue: !todo.completed,
     }).then(function (result) {
       // const index = this.dataSource.data.indexOf(todo);
       if (result.value) {
         todo.completed = false;
-        this.todosService.toogleTodo(todo).subscribe((response) => {
+        this.todosService.editTodo(todo).subscribe((response) => {
           // this.dataSource.data[index] = todo;
           this.getData();
           Swal.fire({ icon: 'success', text: 'Done olarak güncellendi!' });
         });
       } else if (result.value === 0) {
         todo.completed = true;
-        this.todosService.toogleTodo(todo).subscribe((response) => {
+        this.todosService.editTodo(todo).subscribe((response) => {
           // this.dataSource.data[index] = todo;
           this.getData();
           Swal.fire({

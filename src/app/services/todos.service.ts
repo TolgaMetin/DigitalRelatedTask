@@ -31,7 +31,7 @@ export class TodosService {
   }
 
 
-  toggleTodo(todo: TodoDto): Observable<HttpResponse<object>> {
+  EditTodo(todo: TodoDto): Observable<HttpResponse<object>> {
     this.logger.log(`Requesting PUT at '${this.url}/${todo.id}'...`);
 
     return this.http.put(`${this.url}/${todo.id}`, JSON.stringify(todo), {
